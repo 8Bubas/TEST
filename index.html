@@ -3,287 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мини-игры на перекур</title>
+    <title>Ультимативный Сборник: 10 Игр на Двоих</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1e1e2f;
-            color: #ffffff;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #0f0f1a; color: #fff;
+            text-align: center; margin: 0; padding: 15px; user-select: none;
         }
-        h1 { margin-bottom: 10px; color: #f1c40f; }
+        h1 { margin: 5px 0 15px; color: #f1c40f; font-size: 28px; }
         
-        /* Навигация */
-        .nav { margin-bottom: 20px; }
-        .nav button {
-            background-color: #34495e;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin: 0 5px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.2s;
+        /* Сетка выбора игр */
+        .menu-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px; max-width: 800px; margin: 0 auto 20px;
         }
-        .nav button:hover, .nav button.active { background-color: #3498db; }
+        .menu-grid button {
+            background-color: #23233b; color: #fff; border: 2px solid #34495e;
+            padding: 10px 5px; font-size: 13px; font-weight: bold; cursor: pointer;
+            border-radius: 6px; transition: 0.2s;
+        }
+        .menu-grid button:hover { background-color: #34495e; transform: translateY(-2px); }
+        .menu-grid button.active { background-color: #3498db; border-color: #fff; }
 
-        /* Контейнеры игр */
+        /* Игровые зоны */
         .game-section {
-            display: none;
-            background-color: #2c3e50;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: none; background-color: #1a1a2e;
+            max-width: 650px; margin: 0 auto; padding: 20px;
+            border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            border: 1px solid #2e2e4e;
         }
         .game-section.active { display: block; }
-        .controls-info { font-size: 14px; color: #bdc3c7; margin-bottom: 20px; }
+        .controls-info { font-size: 13px; color: #a0a0b8; margin-bottom: 12px; line-height: 1.4; }
+        .status-txt { font-size: 18px; margin: 10px 0; font-weight: bold; min-height: 25px; }
+        
         .restart-btn {
             background-color: #e74c3c; color: white; border: none;
-            padding: 10px 20px; font-size: 16px; cursor: pointer;
-            border-radius: 5px; margin-top: 20px;
+            padding: 8px 16px; font-size: 14px; cursor: pointer;
+            border-radius: 6px; margin-top: 15px; font-weight: bold;
         }
         .restart-btn:hover { background-color: #c0392b; }
+        canvas { background: #0b0b11; display: block; margin: 10px auto; border: 3px solid #2e2e4e; border-radius: 6px; }
 
-        /* Крестики-нолики */
-        .tic-tac-board {
-            display: grid; grid-template-columns: repeat(3, 100px);
-            gap: 10px; justify-content: center; margin: 20px auto;
-        }
-        .tic-cell {
-            width: 100px; height: 100px; background-color: #1e1e2f;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 48px; font-weight: bold; cursor: pointer;
-            border-radius: 10px; transition: background 0.2s;
-        }
-        .tic-cell:hover { background-color: #3a3a52; }
-        .text-x { color: #e74c3c; }
-        .text-o { color: #3498db; }
+        /* КРЕСТИКИ-НОЛИКИ */
+        .tic-tac-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 8px; justify-content: center; margin: 15px auto; }
+        .tic-cell { width: 80px; height: 80px; background-color: #252538; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .text-x { color: #e74c3c; } .text-o { color: #3498db; }
 
-        /* Перетягивание каната */
-        .tug-container {
-            width: 100%; height: 40px; background-color: #e74c3c; /* Красный P2 */
-            border-radius: 20px; overflow: hidden; margin: 30px 0;
-            position: relative; border: 3px solid #1e1e2f;
-        }
-        .tug-bar {
-            height: 100%; width: 50%; background-color: #3498db; /* Синий P1 */
-            transition: width 0.05s ease-out;
-        }
-        .tug-center-line {
-            position: absolute; left: 50%; top: 0; bottom: 0;
-            width: 4px; background-color: white; transform: translateX(-50%);
-        }
+        /* КНОПОЧНЫЙ БОЙ & ГОНКА КЛИКЕРОВ */
+        .bar-container { display: flex; width: 100%; height: 180px; border-radius: 8px; overflow: hidden; border: 2px solid #fff; margin-top: 10px; }
+        .bar-side { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; cursor: pointer; transition: width 0.08s ease; }
+        #box-p1 { background-color: #3498db; width: 50%; } #box-p2 { background-color: #e74c3c; width: 50%; }
 
-        /* Дуэль на реакцию */
-        .reaction-box {
-            width: 200px; height: 200px; background-color: #e74c3c;
-            margin: 20px auto; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center;
-            font-size: 24px; font-weight: bold; transition: background 0.1s;
-        }
-        .reaction-box.ready { background-color: #2ecc71; }
+        /* МАТЕМАТИКА */
+        .math-layout { display: flex; justify-content: space-between; margin-top: 15px; }
+        .math-zone { width: 48%; background: #252538; padding: 10px; border-radius: 6px; box-sizing: border-box; }
+        .math-opt { display: block; width: 100%; margin: 6px 0; padding: 8px; background: #34495e; color: #fff; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        #math-expr { font-size: 24px; font-weight: bold; color: #f1c40f; margin: 10px 0; }
+
+        /* САПЕР */
+        .mine-board { display: grid; grid-template-columns: repeat(5, 50px); gap: 6px; justify-content: center; margin: 15px auto; }
+        .mine-cell { width: 50px; height: 50px; background: #252538; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+
+        /* ЦВЕТА (САЙМОН) */
+        .simon-board { display: grid; grid-template-columns: repeat(2, 100px); gap: 10px; justify-content: center; margin: 15px auto; }
+        .simon-btn { width: 100px; height: 100px; border-radius: 8px; cursor: pointer; opacity: 0.4; transition: opacity 0.1s; }
+        .simon-btn.active { opacity: 1; transform: scale(1.03); }
+
+        /* СТРЕЛКИ */
+        #arrow-display { font-size: 64px; font-weight: bold; margin: 20px 0; color: #2ecc71; text-shadow: 0 0 15px rgba(46,204,113,0.4); }
     </style>
 </head>
 <body>
 
-    <h1>Мини-игры на двоих</h1>
-    <div class="nav">
-        <button onclick="switchGame('tictactoe')" id="btn-tictactoe" class="active">Крестики-нолики</button>
-        <button onclick="switchGame('tugofwar')" id="btn-tugofwar">Перетягивание (Кликер)</button>
-        <button onclick="switchGame('reaction')" id="btn-reaction">Дуэль реакции</button>
-    </div>
+    <h1>Мини-игры на двоих (10 в 1)</h1>
+    <div class="menu-grid" id="menu-tabs"></div>
 
-    <div id="tictactoe" class="game-section active">
-        <h2>Крестики-нолики</h2>
-        <div class="controls-info">Управление: Мышка. Очередь: <span id="tic-turn" class="text-x">X</span></div>
+    <div id="tictactoe" class="game-section">
+        <h2>1. Крестики-Нолики</h2>
+        <div class="controls-info">Управление: Мышка. Ставьте знаки по очереди.</div>
+        <div class="status-txt" id="tic-status"></div>
         <div class="tic-tac-board" id="tic-board"></div>
-        <h3 id="tic-winner"></h3>
-        <button class="restart-btn" onclick="initTicTacToe()">Начать заново</button>
+        <button class="restart-btn" onclick="initTicTacToe()">Заново</button>
     </div>
 
-    <div id="tugofwar" class="game-section">
-        <h2>Перетягивание каната</h2>
-        <div class="controls-info">Управление: Игрок 1 — жми <b>[A]</b>, Игрок 2 — жми <b>[L]</b></div>
-        <h3 id="tug-status">Жмите кнопки как сумасшедшие!</h3>
-        <div class="tug-container">
-            <div class="tug-bar" id="tug-bar"></div>
-            <div class="tug-center-line"></div>
+    <div id="pong" class="game-section">
+        <h2>2. Понг (Ракетки)</h2>
+        <div class="controls-info">Синий (Слева): <b>W / S</b> | Красный (Справа): <b>Стрелка Вверх / Вниз</b></div>
+        <div class="status-txt" id="pong-status">Синий: 0 | Красный: 0</div>
+        <canvas id="pongCanvas" width="550" height="260"></canvas>
+        <button class="restart-btn" onclick="initPong()">Заново</button>
+    </div>
+
+    <div id="tapbattle" class="game-section">
+        <h2>3. Кнопочный Бой</h2>
+        <div class="controls-info">Кликайте по своей стороне ИЛИ жмите клавиши: Синий — <b>[Q]</b>, Красный — <b>[P]</b></div>
+        <div class="status-txt" id="tap-status">Давите кнопки!</div>
+        <div class="bar-container">
+            <div id="box-p1" class="bar-side" onclick="handleTapBattle(1)">СИНИЙ [Q]</div>
+            <div id="box-p2" class="bar-side" onclick="handleTapBattle(2)">КРАСНЫЙ [P]</div>
         </div>
-        <button class="restart-btn" onclick="initTugOfWar()">Сброс</button>
+        <button class="restart-btn" onclick="initTapBattle()">Заново</button>
     </div>
 
-    <div id="reaction" class="game-section">
-        <h2>Дуэль на реакцию</h2>
-        <div class="controls-info">Игрок 1 <b>[A]</b> | Игрок 2 <b>[L]</b>. Жмите ТОЛЬКО когда загорится зеленый!</div>
-        <div class="reaction-box" id="reaction-box">ЖДИТЕ...</div>
-        <h3 id="reaction-winner"></h3>
-        <button class="restart-btn" onclick="initReaction()">Начать раунд</button>
+    <div id="snake" class="game-section">
+        <h2>4. Арена Змеек</h2>
+        <div class="controls-info">Синий: <b>W/A/S/D</b>. Красный: <b>Стрелки</b>. Не врезайтесь в стены, в себя и соперника!</div>
+        <div class="status-txt" id="snake-status">В бой!</div>
+        <canvas id="snakeCanvas" width="500" height="260"></canvas>
+        <button class="restart-btn" onclick="initSnake()">Заново</button>
+    </div>
+
+    <div id="clickrace" class="game-section">
+        <h2>5. Кликер-Гонка</h2>
+        <div class="controls-info">Синий: дубась <b>[Пробел]</b> | Красный: дубась <b>[Enter]</b>. Кто первый заполнит бак?</div>
+        <div class="status-txt" id="race-status">Приготовились... ЖМИТЕ!</div>
+        <div class="bar-container" style="height: 50px; background: #222;">
+            <div id="race-p1" style="background:#3498db; width:0%; height:100%;"></div>
+            <div id="race-p2" style="background:#e74c3c; width:0%; height:100%;"></div>
+        </div>
+        <button class="restart-btn" onclick="initClickRace()">Заново</button>
+    </div>
+
+    <div id="math" class="game-section">
+        <h2>6. Быстрая Математика</h2>
+        <div class="controls-info">Синий жмет клавиши <b>A, S, D</b>. Красный жмет клавиши <b>J, K, L</b>. Кто первый выберет верный ответ?</div>
+        <div id="math-expr">0 + 0</div>
+        <div class="status-txt" id="math-status">Решите пример быстрее!</div>
+        <div class="math-layout">
+            <div class="math-zone" style="border-left: 4px solid #3498db;">
+                <div>Варианты (Синий):</div>
+                <button class="math-opt" id="p1-opt0">A: </button>
+                <button class="math-opt" id="p1-opt1">S: </button>
+                <button class="math-opt" id="p1-opt2">D: </button>
+            </div>
+            <div class="math-zone" style="border-right: 4px solid #e74c3c;">
+                <div>Варианты (Красный):</div>
+                <button class="math-opt" id="p2-opt0">J: </button>
+                <button class="math-opt" id="p2-opt1">K: </button>
+                <button class="math-opt" id="p2-opt2">L: </button>
+            </div>
+        </div>
+        <button class="restart-btn" onclick="initMath()">Заново</button>
+    </div>
+
+    <div id="mines" class="game-section">
+        <h2>7. Сапер-Дуэль</h2>
+        <div class="controls-info">На поле скрыто 5 мин. Кликайте по очереди на ячейки. Кто попал на мину — проиграл!</div>
+        <div class="status-txt" id="mine-status">Очередь: Синий</div>
+        <div class="mine-board" id="mine-board"></div>
+        <button class="restart-btn" onclick="initMines()">Заново</button>
+    </div>
+
+    <div id="rps" class="game-section">
+        <h2>8. Камень, Ножницы, Бумага</h2>
+        <div class="controls-info"><b>Вслепую!</b> Синий жмет: 1-Камень, 2-Ножницы, 3-Бумага. <br>Красный жмет: 7-Камень, 8-Ножницы, 9-Бумага.</div>
+        <div class="status-txt" id="rps-status">Оба игрока должны сделать выбор!</div>
+        <div style="display:flex; justify-content:space-around; font-size:24px; margin-top:15px;">
+            <div id="rps-p1-choice" style="color:#3498db;">Синий: ?</div>
+            <div id="rps-p2-choice" style="color:#e74c3c;">Красный: ?</div>
+        </div>
+        <button class="restart-btn" onclick="initRPS()">Заново</button>
+    </div>
+
+    <div id="simon" class="game-section">
+        <h2>9. Цветовой Баттл</h2>
+        <div class="controls-info">Игра показывает вспышки. Синий повторяет за синего, затем Красный за красного. Цепь растет!</div>
+        <div class="status-txt" id="simon-status">Жмите старт</div>
+        <div class="simon-board">
+            <div class="simon-btn" id="simon0" style="background:#2ecc71;" onclick="handleSimonClick(0)"></div>
+            <div class="simon-btn" id="simon1" style="background:#e74c3c;" onclick="handleSimonClick(1)"></div>
+            <div class="simon-btn" id="simon2" style="background:#f1c40f;" onclick="handleSimonClick(2)"></div>
+            <div class="simon-btn" id="simon3" style="background:#3498db;" onclick="handleSimonClick(3)"></div>
+        </div>
+        <button class="restart-btn" onclick="initSimon()">Начать игру</button>
+    </div>
+
+    <div id="speedarrows" class="game-section">
+        <h2>10. Быстрые Стрелки</h2>
+        <div class="controls-info">Нажмите клавишу-стрелку на клавиатуре быстрее соперника! Синий юзает <b>W/A/S/D</b>, Красный — <b>Стрелки</b>.</div>
+        <div id="arrow-display">⏳</div>
+        <div class="status-txt" id="arrow-status">Приготовьте пальцы...</div>
+        <button class="restart-btn" onclick="initSpeedArrows()">Заново</button>
     </div>
 
     <script>
-        // Глобальные переменные
-        let activeGame = 'tictactoe';
-
-        // Переключение вкладок
-        function switchGame(gameId) {
-            document.querySelectorAll('.game-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(gameId).classList.add('active');
-            document.getElementById('btn-' + gameId).classList.add('active');
-            
-            activeGame = gameId;
-            if (gameId === 'tugofwar') initTugOfWar();
-            if (gameId === 'reaction') initReaction();
-        }
-
-        // ================= 1. КРЕСТИКИ-НОЛИКИ =================
-        let ticBoard = ['', '', '', '', '', '', '', '', ''];
-        let ticCurrentPlayer = 'X';
-        let ticActive = true;
-        const winPatterns = [
-            [0,1,2], [3,4,5], [6,7,8], // Горизонтали
-            [0,3,6], [1,4,7], [2,5,8], // Вертикали
-            [0,4,8], [2,4,6]           // Диагонали
+        const gamesList = [
+            { id: 'tictactoe', name: '1. Крестики-Нолики' },
+            { id: 'pong', name: '2. Понг' },
+            { id: 'tapbattle', name: '3. Кнопочный Бой' },
+            { id: 'snake', name: '4. Арена Змеек' },
+            { id: 'clickrace', name: '5. Кликер-Гонка' },
+            { id: 'math', name: '6. Математика' },
+            { id: 'mines', name: '7. Сапер-Дуэль' },
+            { id: 'rps', name: '8. Цу-Е-Фа' },
+            { id: 'simon', name: '9. Запомни Цвет' },
+            { id: 'speedarrows', name: '10. Стрелки' }
         ];
 
-        function initTicTacToe() {
-            ticBoard = ['', '', '', '', '', '', '', '', ''];
-            ticCurrentPlayer = 'X';
-            ticActive = true;
-            document.getElementById('tic-winner').innerText = '';
-            document.getElementById('tic-turn').innerText = ticCurrentPlayer;
-            document.getElementById('tic-turn').className = 'text-x';
-            renderTicBoard();
-        }
+        let curGameId = 'tictactoe';
+        let keys = {};
 
-        function renderTicBoard() {
-            const boardEl = document.getElementById('tic-board');
-            boardEl.innerHTML = '';
-            ticBoard.forEach((cell, index) => {
-                const div = document.createElement('div');
-                div.classList.add('tic-cell');
-                if (cell) div.classList.add(cell === 'X' ? 'text-x' : 'text-o');
-                div.innerText = cell;
-                div.onclick = () => ticClick(index);
-                boardEl.appendChild(div);
-            });
-        }
-
-        function ticClick(index) {
-            if (!ticActive || ticBoard[index] !== '') return;
-            ticBoard[index] = ticCurrentPlayer;
-            checkTicWin();
-            if (ticActive) {
-                ticCurrentPlayer = ticCurrentPlayer === 'X' ? 'O' : 'X';
-                const turnEl = document.getElementById('tic-turn');
-                turnEl.innerText = ticCurrentPlayer;
-                turnEl.className = ticCurrentPlayer === 'X' ? 'text-x' : 'text-o';
-            }
-            renderTicBoard();
-        }
-
-        function checkTicWin() {
-            for (let pattern of winPatterns) {
-                let [a, b, c] = pattern;
-                if (ticBoard[a] && ticBoard[a] === ticBoard[b] && ticBoard[a] === ticBoard[c]) {
-                    document.getElementById('tic-winner').innerText = `Победил игрок ${ticBoard[a]}! 🎉`;
-                    document.getElementById('tic-winner').className = ticBoard[a] === 'X' ? 'text-x' : 'text-o';
-                    ticActive = false;
-                    return;
-                }
-            }
-            if (!ticBoard.includes('')) {
-                document.getElementById('tic-winner').innerText = 'Ничья! 🤝';
-                document.getElementById('tic-winner').className = '';
-                ticActive = false;
-            }
-        }
-        initTicTacToe();
-
-        // ================= 2. ПЕРЕТЯГИВАНИЕ КАНАТА =================
-        let tugScore = 50; // От 0 до 100. 50 = центр.
-        let tugActive = false;
-
-        function initTugOfWar() {
-            tugScore = 50;
-            tugActive = true;
-            document.getElementById('tug-status').innerText = 'Жмите A и L !';
-            updateTugBar();
-        }
-
-        function updateTugBar() {
-            document.getElementById('tug-bar').style.width = tugScore + '%';
-            if (tugScore >= 100) {
-                document.getElementById('tug-status').innerText = 'Победил Игрок 1 (Синие)! 🏆';
-                tugActive = false;
-            } else if (tugScore <= 0) {
-                document.getElementById('tug-status').innerText = 'Победил Игрок 2 (Красные)! 🏆';
-                tugActive = false;
-            }
-        }
-
-        // ================= 3. ДУЭЛЬ РЕАКЦИИ =================
-        let reactState = 'waiting'; // waiting, ready, done
-        let reactTimeout;
-
-        function initReaction() {
-            clearTimeout(reactTimeout);
-            reactState = 'waiting';
-            document.getElementById('reaction-winner').innerText = '';
-            const box = document.getElementById('reaction-box');
-            box.className = 'reaction-box';
-            box.innerText = 'ЖДИТЕ...';
-
-            const waitTime = Math.floor(Math.random() * 3000) + 1500; // От 1.5 до 4.5 сек
-            reactTimeout = setTimeout(() => {
-                if (reactState === 'waiting') {
-                    reactState = 'ready';
-                    box.classList.add('ready');
-                    box.innerText = 'ЖМИ!';
-                }
-            }, waitTime);
-        }
-
-        // ================= ОБРАБОТЧИК КЛАВИАТУРЫ =================
-        window.addEventListener('keydown', (e) => {
-            let key = e.key.toLowerCase();
-            
-            // Логика Перетягивания каната
-            if (activeGame === 'tugofwar' && tugActive) {
-                if (key === 'a' || key === 'ф') { tugScore += 2; updateTugBar(); }
-                if (key === 'l' || key === 'д') { tugScore -= 2; updateTugBar(); }
-            }
-
-            // Логика Дуэли реакции
-            if (activeGame === 'reaction') {
-                if (key === 'a' || key === 'ф' || key === 'l' || key === 'д') {
-                    let player = (key === 'a' || key === 'ф') ? 'Игрок 1 (Синий)' : 'Игрок 2 (Красный)';
-                    let color = (key === 'a' || key === 'ф') ? '#3498db' : '#e74c3c';
-
-                    if (reactState === 'waiting') {
-                        // Фальстарт
-                        clearTimeout(reactTimeout);
-                        reactState = 'done';
-                        document.getElementById('reaction-box').innerText = 'ФАЛЬСТАРТ';
-                        document.getElementById('reaction-winner').innerText = `${player} нажал слишком рано! Победил соперник.`;
-                        document.getElementById('reaction-winner').style.color = color;
-                    } else if (reactState === 'ready') {
-                        // Честная победа
-                        reactState = 'done';
-                        document.getElementById('reaction-box').innerText = 'СТОП';
-                        document.getElementById('reaction-box').classList.remove('ready');
-                        document.getElementById('reaction-winner').innerText = `⚡ ${player} оказался быстрее!`;
-                        document.getElementById('reaction-winner').style.color = color;
-                    }
-                }
-            }
+        // Генерация вкладок
+        const tabsBox = document.getElementById('menu-tabs');
+        gamesList.forEach((g, idx) => {
+            let btn = document.createElement('button');
+            btn.innerText = g.name; btn.id = 'tab-' + g.id;
+            if(idx===0) btn.classList.add('active');
+            btn.onclick = () => selectGame(g.id);
+            tabsBox.appendChild(btn);
         });
-    </script>
-</body>
-</html>
+
+        function selectGame(id) {
+            cancelAnimationFrame(pongId); cancelAnimationFrame(snakeId); clearAllIntervals();
+            document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('#menu-tabs button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active');
+            document.getElementById('tab-' + id).classList.add('active');
+            curGameId = id;
+
+            if(id === 'tictactoe') initTicTacToe();
+            if(id === 'pong') initPong();
+            if(id === 'tapbattle') initTapBattle();
+            if(id === 'snake') initSnake();
+            if(id === 'clickrace') initClickRace();
+            if(id === 'math') initMath();
+            if(id === 'mines') initMines();
+            if(id === 'rps') initRPS();
+            if(id === 'simon') initSimon();
+            if(id === 'speedarrows') initSpeedArrows();
+        }
+
+        function clearAllIntervals() { let id = window.setTimeout(function() {}, 0); while (id--) { window.clearTimeout(id); } }
+
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+            // Обработчики мгновенного нажатия клавиш
+            if(curGameId === 'tapbattle') {
+                if(e.code === 'KeyQ') handleTapBattle(1);
+                if(e.code === 'KeyP') handleTapBattle(2);
+            }
+            if(curGameId === 'clickrace') {
+                if(e.code === 'Space') handleRace(1);
+                if(e.code === 'Enter') handleRace(2);
+            }
+            if(curGameId === 'math') handleMathKey(e.code);
+            if(curGameId === 'rps') handleRPSKey(e.code);
+            if(curGameId === 'speedarrows') handleArrowKey(e.code);
+        });
+        window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+        // ================= 1. КРЕСТИКИ НОЛИКИ =================
+        let ticGrid, ticPlayer, ticLive;
+        function initTicTacToe() {
+            ticGrid = Array(9).fill(''); ticPlayer = 'X'; ticLive = true;
+            document.getElementById('tic-status').innerHTML = 'Ходит: <span class="text-x">X</span>';
+            let b = document.getElementById('tic-board'); b.innerHTML = '';
+            for(let i=0; i<9; i++) {
+                let c = document.createElement('div'); c.classList.add('tic-cell');
+                c.onclick = () => {
+                    if(!ticLive || ticGrid[i]!=='') return;
+                    ticGrid[i] = ticPlayer;
+                    c.innerText = ticPlayer; c.classList.add(ticPlayer==='X'?'text-x':'text-o');
+                    if([ [0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6] ].some(p => ticGrid[p[0]] && ticGrid[p[0]]===ticGrid[p[1]] && ticGrid[p[0]]===ticGrid[p[2]])) {
+                        document.getElementById('tic-status').innerHTML = `🎉 Победил игрок ${ticPlayer}!`; ticLive = false; return;
+                    }
+                    if(!ticGrid.includes('')) { document.getElementById('tic-status').innerText = '🤝 Ничья!'; return; }
+                    ticPlayer = ticPlayer==='X'?'O':'X';
+                    document.getElementById('tic-status').innerHTML = `Ходит: <span class="${ticPlayer==='X'?'text-x':'text-o'}">${ticPlayer}</span>`;
+                };
+                b.appendChild(c);
+            }
+        }
+
+        // ================= 2. ПОНГ =================
+        let pongCanvas = document.getElementById('pongCanvas'), pCtx = pongCanvas.getContext('2d'), pongId;
+        let p1y, p2y, p1Sc, p2Sc, ballX, ballY, ballDx, ballDy, pongLive;
+        function initPong() {
+            p1y=90; p2y=90; p1Sc=0; p2Sc=0; pongLive=true; resetPongBall();
+            document.getElementById('pong-status').innerText = `Синий: 0 | Красный: 0`;
+            pongTick();
+        }
+        function resetPongBall() { ballX=275; ballY=130; ballDx=Math.random()>0.5?3:-3; ballDy=Math.random()>0.5*2:-2; }
+        function pongTick() {
+            if(curGameId!=='pong' || !pongLive) return;
+            if(keys['KeyW'] && p1y > 0) p1y-=4; if(keys['KeyS'] && p1y < 180) p1y+=4;
+            if(keys['ArrowUp'] && p2y > 0) p2y-=4; if(keys['ArrowDown'] && p2y < 180) p2y+=4;
+            ballX+=ballDx; ballY+=ballDy;
+            if(ballY<=5 || ballY>=255) ballDy*=-1;
+            if(ballX<=22 && ballY>=p1y && ballY<=p1y+80) { ballDx=Math.abs(ballDx)+0.2; ballDy+=(ballY-(p1y+40))*0.05; }
+            if(ballX>=528 && ballY>=p2y && ballY<=p2y+80) { ballDx=-Math.abs(ballDx)-0.2; ballDy+=(ballY-(p2y+40))*0.05; }
+            if(ballX<0) { p2Sc++; resetPongBall(); } if(ballX>550) { p1Sc++; resetPongBall(); }
+            document.getElementById('pong-status').innerText = `Синий: ${p1Sc} | Красный: ${p2Sc}`;
+            pCtx.clearRect(0,0,550,260); pCtx.fillStyle='#3498db'; pCtx.fillRect(10,p1y,12,80); pCtx.fillStyle='#e74c3c'; pCtx.fillRect(528,p2y,12,80);
+            pCtx.fillStyle='#fff'; pCtx.beginPath(); pCtx.arc(ballX,ballY,7,0,Math.PI*2); pCtx.fill();
+            pongId = requestAnimationFrame(pongTick);
+        }
+
+        // ================= 3. КНОПОЧНЫЙ БОЙ =================
+        let tapPct, tapLive;
+        function initTapBattle() { tapPct=50; tapLive=true; document.getElementById('tap-status').innerText='Давите кнопки!'; updateTapUI(); }
+        function handleTapBattle(p) {
+            if(!tapLive || curGameId!=='tapbattle') return;
+            tapPct += (p===1? 2.5 : -2.5); updateTapUI();
+            if(tapPct>=100) { document.getElementById('tap-status').innerText='🏆 СИНИЙ ПОБЕДИЛ!'; tapLive=false; }
+            else if(tapPct<=0) { document.getElementById('tap-status').innerText='🏆 КРАСНЫЙ ПОБЕДИЛ!'; tapLive=false; }
+        }
+        function updateTapUI() { document.getElementById('box-p1').style.width=tapPct+'%'; document.getElementById('box-p2').style.width=(100-tapPct)+'%'; }
+
+        // ================= 4. ЗМЕЙКА =================
+        let snCanvas = document.getElementById('snakeCanvas'), sCtx = snCanvas.getContext('2d'), snakeId;
+        let s1, s2, d1, d2, snFood, snLive, snTimer;
+        function initSnake() {
+            s1=[{x:60,y:100}]; s2=[{x:440,y:100}]; d1='RIGHT'; d2='LEFT'; snLive=true;
+            document.getElementById('snake-status').innerText = 'В бой!'; spawnSnakeFood();
+            if(snTimer) clearInterval(snTimer); snTimer = setInterval(snakeTick, 100);
+        }
+        function spawnSnakeFood() { snFood = { x: Math.floor(Math.random()*25)*20, y: Math.floor(Math.random()*13)*20 }; }
+        function snakeTick() {
+            if(curGameId!=='snake' || !snLive) return;
+            if(keys['KeyW'] && d1!=='DOWN') d1='UP'; if(keys['KeyS'] && d1!=='UP') d1='DOWN'; if(keys['KeyA'] && d1!=='RIGHT') d1='LEFT'; if(keys['KeyD'] && d1!=='LEFT') d1='RIGHT';
+            if(keys['ArrowUp'] && d2!=='DOWN') d2='UP'; if(keys['ArrowDown'] && d2!=='UP') d2='DOWN'; if(keys['ArrowLeft'] && d2!=='RIGHT') d2='LEFT'; if(keys['ArrowRight'] && d2!=='LEFT') d2='RIGHT';
+            
+            let h1 = {...s1[0]}, h2 = {...s2[0]};
+            if(d1==='UP') h1.y-=20; if(d1==='DOWN') h1.y+=20; if(d1==='LEFT') h1.x-=20; if(d1==='RIGHT') h1.x+=20;
+            if(d2==='UP') h2.y-=20; if(d2==='DOWN') h2.y+=20; if(d2==='LEFT') h2.x-=20; if(d2==='RIGHT') h2.x+=20;
+
+            let checkCrash = (h, self, opp) => h.x<0||h.x>=500||h.y<0||h.y>=260 || self.some(p=>p.x===h.x&&p.y===h.y) || opp.some(p=>p.x===h.x&&p.y===h.y);
+            let c1 = checkCrash(h1, s1, s2), c2 = checkCrash(h2, s2, s1);
+            if(c1 && c2) { document.getElementById('snake-status').innerText='🤝 Взаимное уничтожение (Ничья)!'; snLive=false; return; }
+            if(c1) { document.getElementById('snake-status').innerText='🏆 КРАСНЫЙ ПОБЕДИЛ!'; snLive=false; return; }
+            if(c2) { document.getElementById('snake-status').innerText='🏆 СИНИЙ ПОБЕДИЛ!'; snLive=false; return; }
+
+            s1.unshift(h1); if(h1.x===snFood.x && h1.y===snFood.y) spawnSnakeFood(); else s1.pop();
+            s2.unshift(h2); if(h2.x===snFood.x && h2.y===snFood.y) spawnSnakeFood(); else s2.pop();
+
+            sCtx.clearRect(0,0,500,260); sCtx.fillStyle='#3498db'; s1.forEach(p=>sCtx.fillRect(p.x,p.y,18,18));
+            sCtx.fillStyle='#e74c3c'; s2.forEach(p=>sCtx.fillRect(p.x,p.y,18,18)); sCtx.fillStyle='#2ecc71'; sCtx.fillRect(snFood.x,snFood.y,18,18);
+        }
+
+        // ===============
